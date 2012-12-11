@@ -26,6 +26,7 @@ gem 'resque'
 gem 'resque-pool'
 gem 'mongo'
 gem 'bson_ext' # for mongo performance!
+gem 'haml'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
