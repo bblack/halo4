@@ -10,6 +10,13 @@ class DataController < ApplicationController
           :y => p['Kills'] - p['Deaths']
         }
       end
-    render :json => games
+    runningspread = 0
+    runningspread = games.collect do |g|
+      runningspread += g[:y]
+      {:x => g[:x], :y => runningspread}
+    end
+    render :json => [
+      {:name => 'Spread by match', :data => games, :type => 'scatter'},
+      {:name => 'Cumulative spread', :data => runningspread, :type => 'line', :yAxis => 1}]
   end
 end
