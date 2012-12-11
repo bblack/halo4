@@ -22,7 +22,7 @@ class Waypoint
   end
 
   class Halo4
-    @@token = "v2=IeZVtamoa8U4R1pFmgF9y1iHz_ouHeffKNYJk_CVcXEdFZbtrMLnHvN_o1FPjFCgIwrqslWyytzTxZDJjqYjRKcV2vqI0KOlBo4va-eRkrWyUIWHt24VYkcfpaQ2AIJtudJUJX7O1eHsNK7ES3kHQjYTxtJPH8nqheAiBKE6xmf_eUvSl65I1m8p8vVoXFoT_cRY_X-pyaKL-9HLc1tkmVaR8wCy96Z0vXzeq1VicO0S7gvpfco5A_Wlk_4a_8cP_YaY02oT27k9vOCC1E_bM19x39gmpS9GIEBREA2-Pk4xDV4GgP0ZgQkmkV52_QDhHsa9h2BA_2RDjoyrs572MnFX4HAauU0ujF9WJfUeMDAQyuqOoePxh232vxxVfn8yKO9s8RyW7gNe4DWvwwgoMtwaOFKVfxM"
+    @@token = "v2=MbabGhWmFgUwAR4LXslNTRCBmYeeQNlk5VxJouVXzV3yeCZ5JqMUb6ruTYpnELLw7JptifzvIkEs2EsUsn8sGz8D_s2BpIElbrPxInCFnp4hleIjxVvAcVnc6HZfOAHJB5RT0GIpln_CgfV2kULyuYBpUTKx_6LPWuUvSw3ZJR907uZghBUis5YwTkewbVU8zrF44xiJkRgRQLCAOvcnlTTG3tNLaMCt3WWuRQK9tXzuqw30zSs3MmHhmQNuyGmA5eNSAKC-ugfNAiYjmghaDDod9D0bXK3PTJ-qcOptU23o3z8uCbTgkC04q9wsbJzJL4j1jnh-O3jRpgulRXD9yLxx5Y8fCvpzXwXIDVm4tODldh-gy3LUbWVPc-sONkoislbN7ombi84iln_rQaRA_tIDorr8inc"
     @@db = Waypoint.mongo_client.db("halo4-#{Rails.env}")
     
     def self.token
@@ -76,6 +76,8 @@ class Waypoint
       @queue = :everything
 
       def self.perform(game_id)
+        # break it here if we already have this game?
+        # pass an overwrite flag to force fetching it?
         res = Typhoeus.get(
           "https://stats.svc.halowaypoint.com/en-us/h4/matches/#{game_id}",
           {:headers => {:Accept => 'application/json', 'X-343-Authorization-Spartan' => Waypoint::Halo4.token}}

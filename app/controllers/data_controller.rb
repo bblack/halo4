@@ -1,10 +1,13 @@
 class DataController < ApplicationController
   def kd
+    # mongo queries by string are case sensitive
+    gamertagregex = Regexp.new(params[:gamertag], Regexp::IGNORECASE)
+
     games = Waypoint::Halo4.db['games']
-      .find({'Players.Gamertag' => params[:gamertag]}, {:limit => 200})
+      .find({'Players.Gamertag' => gamertagregex}, {:limit => 200})
       .sort(:EndDateUtc)
       .collect do |g|
-        p = g['Players'].find{|p| p['Gamertag'] == params[:gamertag]}
+        p = g['Players'].find{|p| p['Gamertag'] =~ gamertagregex}
         {
           :x => Time.parse(g['EndDateUtc']).to_i * 1000,
           :y => p['Kills'] - p['Deaths']
