@@ -8,44 +8,33 @@
       },
       plotOptions: {
         line: {
+          lineWidth: 1,
+          shadow: false,
           marker: {
             enabled: false
           }
         }
       },
       title: {
-        text: 'K-D Spread by Match: #{params[:gamertag]}'
+        text: 'KDR: #{params[:gamertag]}'
       },
       xAxis: {
         type: 'datetime'
       },
-      yAxis: [{
+      yAxis: {
         title: {
-          text: 'Spread (by match)'
+          text: 'KDR'
         }
-      },{
-        title: {
-          text: 'Spread (cumulative)',
-          style: {
-            color: '#aa4643'
-          }
-        },
-        labels: {
-          style: {
-            color: '#aa4643'
-          }
-        },
-        opposite: true
-      }],
+      },
       tooltip: {
         formatter: function() { return new Date(this.x).toString() + '<br/>Spread: ' + this.y.toString(); }
       },
     };
 
     $.ajax({
-      url: '/data/kd/#{params[:gamertag]}',
+      url: '/data/kdr/#{params[:gamertag]}',
       success: function(d) {
-        chartOpts.series = d;
+        chartOpts.series = [{name: "KDR", data: d}];
         var chart = new Highcharts.Chart(chartOpts);
       }
     })

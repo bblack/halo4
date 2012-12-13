@@ -1,18 +1,16 @@
 class DataController < ApplicationController
-  def kd
-    # mongo queries by string are case sensitive
-    gamertagregex = Regexp.new(params[:gamertag], Regexp::IGNORECASE)
+  include DataHelper
 
-    games = Waypoint::Halo4.db['games']
-      .find({'Players.Gamertag' => gamertagregex}, {:limit => 200})
-      .sort(:EndDateUtc)
-      .collect do |g|
-        p = g['Players'].find{|p| p['Gamertag'] =~ gamertagregex}
-        {
-          :x => Time.parse(g['EndDateUtc']).to_i * 1000,
-          :y => p['Kills'] - p['Deaths']
-        }
-      end
+  before_filter :collect_games
+
+  def kd
+    games = @games.collect do |g|
+      p = g['Players'].find{|p| p['Gamertag'] =~ gamertagregex}
+      {
+        :x => Time.parse(g['EndDateUtc']).to_i * 1000,
+        :y => p['Kills'] - p['Deaths']
+      }
+    end
     runningspread = 0
     runningspread = games.collect do |g|
       runningspread += g[:y]
@@ -22,4 +20,21 @@ class DataController < ApplicationController
       {:name => 'Spread by match', :data => games, :type => 'scatter'},
       {:name => 'Cumulative spread', :data => runningspread, :type => 'line', :yAxis => 1}]
   end
+
+  def kdr
+    totalk = 0
+    totald = 0
+    games = @games.collect do |g|
+      p = g['Players'].find{|p| p['Gamertag'] =~ gamertagregex}
+      totalk += p['Kills']
+      totald += p['Deaths']
+      {
+        :x => Time.parse(g['EndDateUtc']).to_i * 1000,
+        :y => totald == 0 ? 0 : (totalk.to_f / totald)
+      }
+    end
+
+    render :json => games
+  end
+
 end
