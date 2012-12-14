@@ -14,7 +14,7 @@
     chart.showLoading();
 
     $.ajax({
-      url: '/data/kdr/#{params[:gamertag]}',
+      url: '/data/kdr/#{params[:gamertag]}?split=GameVariantName',
       success: function(d) {
         $.each(d, function(i,s){
           chart.addSeries(s);

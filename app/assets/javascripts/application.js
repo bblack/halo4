@@ -57,7 +57,7 @@ Application = {
           }
         },
         tooltip: {
-          formatter: function() { return new Date(this.x).toString() + '<br/>' + this.y.toString(); }
+          formatter: function() { return "<b>" + this.series.name + "</b><br/>" + new Date(this.x).toString() + '<br/>' + this.y.toString(); }
         },
         xAxis: {
           type: 'datetime'
