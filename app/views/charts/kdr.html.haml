@@ -1,41 +1,25 @@
-#container{:style => 'width: 600px; height: 400px;'}
+#container
 :javascript
   $(function(){
-    var chartOpts = {
+    
+    var chart = new Highcharts.Chart(Application.chartOpts({
       chart: {
-        renderTo: 'container',
-        zoomType: 'x'
-      },
-      plotOptions: {
-        line: {
-          lineWidth: 1,
-          shadow: false,
-          marker: {
-            enabled: false
-          }
-        }
+        renderTo: 'container'
       },
       title: {
-        text: 'KDR: #{params[:gamertag]}'
-      },
-      xAxis: {
-        type: 'datetime'
-      },
-      yAxis: {
-        title: {
-          text: 'KDR'
-        }
-      },
-      tooltip: {
-        formatter: function() { return new Date(this.x).toString() + '<br/>Spread: ' + this.y.toString(); }
-      },
-    };
+        text: 'K/D Ratio: #{params[:gamertag]}'
+      }
+    }));
+
+    chart.showLoading();
 
     $.ajax({
       url: '/data/kdr/#{params[:gamertag]}',
       success: function(d) {
-        chartOpts.series = [{name: "KDR", data: d}];
-        var chart = new Highcharts.Chart(chartOpts);
+        $.each(d, function(i,s){
+          chart.addSeries(s);
+        });
+        chart.hideLoading();
       }
-    })
+    });
   });

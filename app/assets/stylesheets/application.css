@@ -11,3 +11,7 @@
  *= require_self
  *= require_tree .
  */
+
+#container {
+  min-height: 400px;
+}

@@ -1,52 +1,25 @@
-#container{:style => 'width: 600px; height: 400px;'}
+#container
 :javascript
   $(function(){
-    var chartOpts = {
+  
+    var chart = new Highcharts.Chart(Application.chartOpts({
       chart: {
-        renderTo: 'container',
-        zoomType: 'x'
-      },
-      plotOptions: {
-        line: {
-          marker: {
-            enabled: false
-          }
-        }
+        renderTo: 'container'
       },
       title: {
-        text: 'K-D Spread by Match: #{params[:gamertag]}'
-      },
-      xAxis: {
-        type: 'datetime'
-      },
-      yAxis: [{
-        title: {
-          text: 'Spread (by match)'
-        }
-      },{
-        title: {
-          text: 'Spread (cumulative)',
-          style: {
-            color: '#aa4643'
-          }
-        },
-        labels: {
-          style: {
-            color: '#aa4643'
-          }
-        },
-        opposite: true
-      }],
-      tooltip: {
-        formatter: function() { return new Date(this.x).toString() + '<br/>Spread: ' + this.y.toString(); }
-      },
-    };
+        text: 'K-D Spread: #{params[:gamertag]}'
+      }
+    }));
+
+    chart.showLoading();
 
     $.ajax({
       url: '/data/kd/#{params[:gamertag]}',
       success: function(d) {
-        chartOpts.series = d;
-        var chart = new Highcharts.Chart(chartOpts);
+        $.each(d, function(i,s){
+          chart.addSeries(s);
+        });
+        chart.hideLoading();
       }
-    })
+    });
   });
