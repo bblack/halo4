@@ -22,11 +22,15 @@ class Waypoint
   end
 
   class Halo4
-    @@token = "v2=hGx4uNdBB1Tr27hTGzVI-EA49BnkV3VuUvQ9Bqy57XYny9AWsV6fIV41q4k_D2HzAMzyLZHe9apHBemp5VNL7NqiLT1zgbg82IzD-5juRCKJd6NC41u5RnwM1WXzjOeIxI2uZWTpMnMEjjTL-vTsFtWy9OcilXdLIBmKrGfblZAw7raevvB-1w0Nh1gBa57YhYyPHgxT8KvTQntjlV0pe1egn1pB3YcOPvzp07geqHZFlXFYeXm2AoRgXNnON2lxavoo-IYJIgZLTyMUzo__I4oWOkQ0Ml8um0XrNMjEx6PAjFVosLTHVFeRlAYDteza9ivzdv9Kf5lPwLHKzE1iDDC_LA0sQusou0KaBcpWmcGAlZek5flLxMI2S9iv_M0GndSsGSiUjsnHtnQFTCKCHmrs555OWz4"
+    @@redis = Redis::Namespace.new("halo4-#{Rails.env}")
     @@db = Waypoint.mongo_client.db("halo4-#{Rails.env}")
     
     def self.token
-      @@token
+      @@redis.get('token')
+    end
+
+    def self.token=(x)
+      @@redis.set('token', x)
     end
 
     def self.db

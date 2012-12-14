@@ -143,6 +143,8 @@ DEPENDENCIES
   jquery-rails
   mongo
   rails (= 3.2.8)
+  redis
+  redis-namespace
   resque
   resque-pool
   sass-rails (~> 3.2.3)

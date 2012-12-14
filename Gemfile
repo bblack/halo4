@@ -22,6 +22,8 @@ end
 gem 'jquery-rails'
 gem 'sqlite3'
 gem 'typhoeus'
+gem 'redis'
+gem 'redis-namespace'
 gem 'resque'
 gem 'resque-pool'
 gem 'mongo'
