@@ -1,20 +1,19 @@
-#container
+%div{:id => "#{element_id}"}
 :javascript
   $(function(){
-  
     var chart = new Highcharts.Chart(Application.chartOpts({
       chart: {
-        renderTo: 'container'
+        renderTo: '#{element_id}'
       },
       title: {
-        text: 'K-D Spread: #{params[:gamertag]}'
+        text: '#{title}'
       }
     }));
 
     chart.showLoading();
 
     $.ajax({
-      url: '/data/kd/#{params[:gamertag]}',
+      url: '#{data_url}',
       success: function(d) {
         $.each(d, function(i,s){
           chart.addSeries(s);
