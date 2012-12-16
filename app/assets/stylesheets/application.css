@@ -12,6 +12,6 @@
  *= require_tree .
  */
 
-#container {
+.chart-container {
   min-height: 400px;
 }

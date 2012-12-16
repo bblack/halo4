@@ -57,7 +57,7 @@ class DataController < ApplicationController
       }
     end
     j = series_data_by_split.collect do |k, v|
-      {:name => "KDR (#{k})", :data => v, :type => 'line'}
+      {:name => "#{k}", :data => v, :type => 'line'}
     end
     render :json => j
   end
