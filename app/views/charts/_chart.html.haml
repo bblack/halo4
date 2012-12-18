@@ -1,24 +1,33 @@
 %div{:id => "#{element_id}"}
-:javascript
-  $(function(){
-    var chart = new Highcharts.Chart(Application.chartOpts({
-      chart: {
-        renderTo: '#{element_id}'
-      },
-      title: {
-        text: '#{title}'
-      }
-    }));
+  %div{:id => "#{element_id}_chart"}
+  .chart_options
+    = label_tag(:split, 'Split: ')
+    = select_tag(:split, options_for_select([['No split', ''], ['Map', 'MapName'], ['Game variant', 'GameVariantName']]))
+    %button{:id => 'updateChart'}
+      Plot
+    
+  :javascript
+    $(function(){
+      var chart = new Highcharts.Chart(Application.chartOpts({
+        chart: {
+          renderTo: '#{element_id}_chart'
+        },
+        title: {
+          text: '#{title}'
+        }
+      }));
 
-    chart.showLoading();
+      $("#updateChart").click($.proxy(function(e){
+        var hashParams = {};
+        hashParams['split'] = $("#split").val();
 
-    $.ajax({
-      url: '#{data_url}',
-      success: function(d) {
-        $.each(d, function(i,s){
-          chart.addSeries(s);
-        });
-        chart.hideLoading();
-      }
+        window.location = '#' + $.param(hashParams);
+        Application.updateChart(chart, '#{data_url}', hashParams);
+      }, this));
+
+      Application.updateChart(
+        chart,
+        '#{data_url}',
+        Application.fragToObj()
+      );
     });
-  });

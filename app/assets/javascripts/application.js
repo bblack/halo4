@@ -15,6 +15,46 @@
 //= require_tree .
 
 Application = {
+  updateChart: function(chart, url, data) {
+    $.each(data, function(k,v){
+      $(chart.container).parent().parent().find('.chart_options').find('#' + k).val(v);
+    });
+
+    chart.showLoading();
+
+    while (chart.series.length > 0) {
+      chart.series[0].remove(false);
+    }
+
+    $.ajax({
+      url: url,
+      data: data,
+      success: function(d) {
+        $.each(d, function(i,s){
+          chart.addSeries(s);
+        });
+        chart.hideLoading();
+      }
+    });
+  },
+
+  fragToObj: function() {
+    var fragString = window.location.hash.replace(/^#/, '');
+    return Application.paramToObj(fragString);
+  },
+
+  paramToObj: function(s) {
+    if (s == "") {
+      return {};
+    }
+    var pairStrings = s.split('&');
+    ret = {};
+    $.each(pairStrings, function(i,e){
+      ret[e.split('=')[0]] = e.split('=')[1];
+    });
+    return ret;
+  },
+
   chartOpts: function(opts) {
     return $.extend(true, 
       {

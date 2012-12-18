@@ -16,14 +16,26 @@ class DataController < ApplicationController
   end
 
   def kd
-    cumulative = 0
-    data_spread = @games.collect do |g|
+    cumulative_by_split = {}
+    series_data_by_split = {}
+    @games.each do |g|
       p = g['Players'].find{|p| p['Gamertag'] =~ gamertagregex}
-      cumulative += p['Kills'] - p['Deaths']
-      {:x => Time.parse(g['EndDateUtc']).to_i * 1000, :y => cumulative}
-    end
+      split_key_name = params[:split].present? ? g[params[:split]] : 'Overall'
 
-    render :json => [{:name => 'Spread (cumulative)', :data => data_spread, :type => 'line'}]
+      cumulative_by_split[split_key_name] ||= 0
+      cumulative = cumulative_by_split[split_key_name]
+      cumulative += p['Kills'] - p['Deaths']
+
+      series_data_by_split[split_key_name] ||= []
+      series_data_by_split[split_key_name] << {
+        :x => Time.parse(g['EndDateUtc']).to_i * 1000,
+        :y => cumulative
+      }
+    end
+    j = series_data_by_split.collect do |k, v|
+      {:name => "#{k}", :data => v, :type => 'line'}
+    end
+    render :json => j
   end
 
   def games_kdr
