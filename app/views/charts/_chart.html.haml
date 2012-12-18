@@ -1,5 +1,5 @@
 %div{:id => "#{element_id}"}
-  %div{:id => "#{element_id}_chart"}
+  %div{:id => "#{element_id}_chart", :class => 'chart-container'}
   .chart_options
     = label_tag(:split, 'Split: ')
     = select_tag(:split, options_for_select([['No split', ''], ['Map', 'MapName'], ['Game variant', 'GameVariantName']]))
