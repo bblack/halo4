@@ -2,6 +2,11 @@ class Waypoint
   include Mongo
 
   @@mc = MongoClient.new('localhost', 27017)
+  @@config = YAML.load_file(File.join(Rails.root, 'config', 'waypoint.yml'))[Rails.env]
+
+  def self.config
+    @@config
+  end
 
   def self.mongo_client
     @@mc
@@ -25,6 +30,35 @@ class Waypoint
     @@redis = Redis::Namespace.new("halo4-#{Rails.env}")
     @@db = Waypoint.mongo_client.db("halo4-#{Rails.env}")
     
+    def self.new_token
+      res = Typhoeus.get("https://app.halowaypoint.com/oauth/signin?returnUrl=https%3A%2F%2Fapp.halowaypoint.com%2Fen-us%2FHalo4")
+      res = Typhoeus.get(URI.encode(res.headers['Location']))
+      nexturl = /urlPost\:'(.*?)'/.match(res.body)[1]
+      nextheaders = {
+        'PPFT' => /sFTTag\:'\<input.*?value=\"(.*?)\"/.match(res.body)[1],
+        'PPSX' => /F\:'(.*?)'/.match(res.body)[1],
+        'i3' => 10000, # js-calc'd time that the user spent on the login page in ms
+        'login' => Waypoint.config['login'],
+        'passwd' => Waypoint.config['passwd'],
+        'LoginOptions' => 3,
+        'NewUser' => 1,
+        'type' => 11,
+        'm1' => 1440,
+        'm2' => 900,
+        'm3' => 0,
+        'i12' => 1,
+        'i17' => 0,
+        'i18' => '__MobileLogin|1,'
+      }
+      res = Typhoeus.post(nexturl, :body => nextheaders)
+      res = Typhoeus.get(URI.encode(res.headers['Location']))
+      webauth = /WebAuth=(.*?);/.match(res.headers['Set-Cookie'])[0]
+      res = Typhoeus.get(URI.encode(res.headers['Location']), :headers => {'Cookie' => webauth})
+      wlid_token = /access_token\:'(.*?)'/.match(res.body)[1]
+      res = Typhoeus.get("https://settings.svc.halowaypoint.com/RegisterClientService.svc/spartantoken/wlid", :headers => {'X-343-Authorization-WLID' => "v1=#{wlid_token}"})
+      spartan_token = res.headers['X-343-Authorization-Spartan']
+    end
+
     def self.token
       @@redis.get('token')
     end
